@@ -6,14 +6,14 @@ from tkinter import *
 from tkinter import filedialog
 from tkinter import font
 import os
-import keyboard
 
 #   variáveis
 player = None
 is_playing = None
 user_name = os.environ.get("USERNAME")
-entry = None
+input_tk = None
 new_window = None
+letter_input_tk = None
 
 #   Player colors set variables
 player_bg_color = 'white'
@@ -144,21 +144,37 @@ def pause():
     player.pause()
 
 
-def color():
-    global entry
+#   START OF THE PERSONALIZATION FUNCTIONS
+#   START OF THE PERSONALIZATION FUNCTIONS
+#   START OF THE PERSONALIZATION FUNCTIONS
+#   Set the background player color
+def bg_color_set():
+    global input_tk
     global player_bg_color
 
     try:
+
+        #   Take the input od the color set window
+        player_bg_color = input_tk.get()
         new_window.destroy()
-        player_bg_color = entry
-        root['bg'] = entry
+
+        #   Changing the colors
+        root.config(background=player_bg_color)
+        controls_frame.config(bg=player_bg_color)
+
+        if player_bg_color != 'black':
+            back_btn.config(bg=player_bg_color)
+            next_btn.config(bg=player_bg_color)
+            pause_btn.config(bg=player_bg_color)
+            play_btn.config(bg=player_bg_color)
+
     except:
-        print('Oops!')
+        new_window.destroy()
 
 # Change player backgroud color
 def bg_color():
     global player_bg_color
-    global entry
+    global input_tk
     global new_window
 
     new_window = Toplevel(root)
@@ -172,14 +188,194 @@ def bg_color():
     my_label.config(font=bolded)
     my_label.pack()
 
-    entry = Entry(new_window, width=50, borderwidth=3, bg='gainsboro')
-    entry.pack(pady=50)
-    entry.insert(0, 'tipe the color or RGB code Here ')
+    input_tk = Entry(new_window, width=50, borderwidth=3, bg='gainsboro')
+    input_tk.pack(pady=50)
+    input_tk.insert(0, 'tipe the color or RGB code Here ')
 
-    button = Button(new_window, text='Confirm', command=color)
+    button = Button(new_window, text='Confirm', command=bg_color_set)
     button.pack()
 
     new_window.mainloop()
+
+
+#   Set the letters colors
+def letter_color_set():
+    global letter_color
+
+    try:
+
+        #   Take the input od the color set window
+        letter_color = input_tk.get()
+        new_window.destroy()
+
+        #   Changing the colors
+        song_box.config(fg=letter_color)
+
+    except:
+        new_window.destroy()
+
+
+#   Change the letters color
+def lt_color():
+    global letter_color
+    global input_tk
+    global new_window
+
+    new_window = Toplevel(root)
+    new_window.geometry('200x200')
+    new_window['bg'] = player_bg_color
+
+    my_label = Label(new_window, text="Write the name of the color \n"
+                                      "or RGB color with the # \n"
+                                      "to set the music name letters colors", bg='gainsboro', fg='black')
+    bolded = font.Font(weight='bold', size='8')  # will use the default font
+    my_label.config(font=bolded)
+    my_label.pack()
+
+    input_tk = Entry(new_window, width=50, borderwidth=3, bg='gainsboro')
+    input_tk.pack(pady=50)
+    input_tk.insert(0, 'tipe the color or RGB code Here ')
+
+    button = Button(new_window, text='Confirm', command=letter_color_set)
+    button.pack()
+
+    new_window.mainloop()
+
+
+def viewer_color_set():
+    global playlist_viewer_color
+
+    try:
+
+        #   Take the input od the color set window
+        playlist_viewer_color = input_tk.get()
+        new_window.destroy()
+
+        #   Changing the colors
+        song_box.config(bg=playlist_viewer_color)
+
+    except:
+        new_window.destroy()
+
+
+#   Change the letters color
+def viewer_color():
+    global letter_color
+    global input_tk
+    global new_window
+
+    new_window = Toplevel(root)
+    new_window.geometry('200x200')
+    new_window['bg'] = player_bg_color
+
+    my_label = Label(new_window, text="Write the name of the color \n"
+                                      "or RGB color with the # \n"
+                                      "to set the playlist viewer color", bg='gainsboro', fg='black')
+    bolded = font.Font(weight='bold', size='8')  # will use the default font
+    my_label.config(font=bolded)
+    my_label.pack()
+
+    input_tk = Entry(new_window, width=50, borderwidth=3, bg='gainsboro')
+    input_tk.pack(pady=50)
+    input_tk.insert(0, 'tipe the color or RGB code Here ')
+
+    button = Button(new_window, text='Confirm', command=viewer_color_set)
+    button.pack()
+
+    new_window.mainloop()
+
+
+#   Set the color od the selection bar
+def bar_color_set():
+    global playlist_bar_color
+
+    try:
+
+        #   Take the input od the color set window
+        playlist_bar_color = input_tk.get()
+        new_window.destroy()
+
+        #   Changing the colors
+        song_box.config(selectbackground=playlist_bar_color)
+
+    except:
+        new_window.destroy()
+
+
+#   Change the bar color
+def bar_color():
+    global playlist_bar_color
+    global input_tk
+    global new_window
+
+    new_window = Toplevel(root)
+    new_window.geometry('200x200')
+    new_window['bg'] = player_bg_color
+
+    my_label = Label(new_window, text="Write the name of the color \n"
+                                      "or RGB color with the # \n"
+                                      "to set the playlist bar color", bg='gainsboro', fg='black')
+    bolded = font.Font(weight='bold', size='8')  # will use the default font
+    my_label.config(font=bolded)
+    my_label.pack()
+
+    input_tk = Entry(new_window, width=50, borderwidth=3, bg='gainsboro')
+    input_tk.pack(pady=50)
+    input_tk.insert(0, 'tipe the color or RGB code Here ')
+
+    button = Button(new_window, text='Confirm', command=bar_color_set)
+    button.pack()
+
+    new_window.mainloop()
+
+
+#   Set the color od the selection bar
+def slc_ltt_color_set():
+    global playlist_bar_color
+
+    try:
+
+        #   Take the input od the color set window
+        select_letter_color = input_tk.get()
+        new_window.destroy()
+
+        #   Changing the colors
+        song_box.config(selectforeground=select_letter_color)
+
+    except:
+        new_window.destroy()
+
+
+#   Change the selected letter color
+def slc_letter_color():
+    global select_letter_color
+    global input_tk
+    global new_window
+
+    new_window = Toplevel(root)
+    new_window.geometry('200x200')
+    new_window['bg'] = player_bg_color
+
+    my_label = Label(new_window, text="Write the name of the color \n"
+                                      "or RGB color with the # \n"
+                                      "to set the selected letter color", bg='gainsboro', fg='black')
+    bolded = font.Font(weight='bold', size='8')  # will use the default font
+    my_label.config(font=bolded)
+    my_label.pack()
+
+    input_tk = Entry(new_window, width=50, borderwidth=3, bg='gainsboro')
+    input_tk.pack(pady=50)
+    input_tk.insert(0, 'tipe the color or RGB code Here ')
+
+    button = Button(new_window, text='Confirm', command=slc_ltt_color_set)
+    button.pack()
+
+    new_window.mainloop()
+
+
+#   END OF THE PERSONALIZATION FUNCTIONS
+#   END OF THE PERSONALIZATION FUNCTIONS
+#   END OF THE PERSONALIZATION FUNCTIONS
 
 
 #   Playlist box
@@ -231,9 +427,9 @@ my_menu.add_command(label='Stop', command=stop)
 set_color_menu = Menu(my_menu)
 my_menu.add_cascade(label='Colors', menu=set_color_menu)
 set_color_menu.add_command(label='Background color', command=bg_color)
-#set_color_menu.add_command(label='Letters color', command=lt_color)
-#set_color_menu.add_command(label='Playlist Viewer color', command=viewer_color)
-#set_color_menu.add_command(label='Playlist Bar Color', command=bar_color)
-#set_color_menu.add_command(label='Selected letter color', command=slc_letter_color)
+set_color_menu.add_command(label='Letters color', command=lt_color)
+set_color_menu.add_command(label='Playlist Viewer color', command=viewer_color)
+set_color_menu.add_command(label='Playlist Bar Color', command=bar_color)
+set_color_menu.add_command(label='Selected letter color', command=slc_letter_color)
 
 root.mainloop()
