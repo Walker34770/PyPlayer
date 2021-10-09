@@ -57,6 +57,33 @@ def add_many_songs():
         song_box.insert(END, song)
 
 
+#   Remove Song Menu
+def remove_song():
+    global is_playing
+    global player
+
+    if is_playing == song_box.get(ACTIVE):
+        player.stop()
+
+    song_box.delete(ANCHOR)
+
+
+#   Remove all Songs of the Playlist
+def remove_all_songs():
+    global player
+
+    player.stop()
+
+    song_box.delete(0, END)
+
+
+#   Stop Menu button
+def stop():
+    global player
+
+    player.stop()
+
+
 #   Play song function
 def play():
     global player
@@ -130,13 +157,6 @@ def back_song():
     song_box.select_set(back, last=None)
 
 
-#   Stop Menu button
-def stop():
-    global player
-
-    player.stop()
-
-
 #   Pause song function
 def pause():
     global player
@@ -147,6 +167,7 @@ def pause():
 #   START OF THE PERSONALIZATION FUNCTIONS
 #   START OF THE PERSONALIZATION FUNCTIONS
 #   START OF THE PERSONALIZATION FUNCTIONS
+
 #   Set the background player color
 def bg_color_set():
     global input_tk
@@ -170,6 +191,7 @@ def bg_color_set():
 
     except:
         new_window.destroy()
+
 
 # Change player backgroud color
 def bg_color():
@@ -412,6 +434,7 @@ next_btn.grid(row=0, column=3, padx=10)
 my_menu = Menu(root)
 root.config(menu=my_menu)
 
+
 #   Add song menu
 add_song_menu = Menu(my_menu)
 my_menu.add_cascade(label="Add Song", menu=add_song_menu)
@@ -420,8 +443,19 @@ add_song_menu.add_command(label='Add one song to the playlist', command=add_song
 #   Add many songs menu
 add_song_menu.add_command(label='Add many songs to the playlist', command=add_many_songs)
 
+
+#   Remove song menu
+remove_song_menu = Menu(my_menu)
+my_menu.add_cascade(label="Remove Song", menu=remove_song_menu)
+remove_song_menu.add_command(label='Remove one song to the playlist', command=remove_song)
+
+#   Remove many songs menu
+remove_song_menu.add_command(label='Remove all songs of the playlist', command=remove_all_songs)
+
+
 #   Stop menu
 my_menu.add_command(label='Stop', command=stop)
+
 
 # Colors set menu
 set_color_menu = Menu(my_menu)
