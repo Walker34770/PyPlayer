@@ -5,7 +5,9 @@ import vlc
 from tkinter import *
 from tkinter import filedialog
 from tkinter import font
+import json
 import os
+
 
 #   variáveis
 player = None
@@ -16,11 +18,23 @@ new_window = None
 letter_input_tk = None
 
 #   Player colors set variables
-player_bg_color = 'white'
-playlist_viewer_color = 'black'
-playlist_bar_color = 'white'
-letter_color = '#fcb505'
-select_letter_color = 'black'
+
+try:
+    reader = json.load(open('theme.json', 'r', encoding='utf-8', errors='ignore'))
+
+    player_bg_color = reader.get('player_bg_color', 'white')
+    playlist_viewer_color = reader.get('playlist_viewer_color', 'black')
+    playlist_bar_color = reader.get('playlist_bar_color', 'white')
+    letter_color = reader.get('letter_color', '#fcb505')
+    select_letter_color = reader.get('select_letter_color', 'black')
+
+
+except:
+    player_bg_color = 'white'
+    playlist_viewer_color = 'black'
+    playlist_bar_color = 'white'
+    letter_color = '#fcb505'
+    select_letter_color = 'black'
 
 #   Stating Tkinter window
 root = Tk()
@@ -177,6 +191,7 @@ def bg_color_set():
 
         #   Take the input od the color set window
         player_bg_color = input_tk.get()
+
         new_window.destroy()
 
         #   Changing the colors
@@ -188,6 +203,7 @@ def bg_color_set():
             next_btn.config(bg=player_bg_color)
             pause_btn.config(bg=player_bg_color)
             play_btn.config(bg=player_bg_color)
+
 
     except:
         new_window.destroy()
@@ -353,7 +369,7 @@ def bar_color():
 
 #   Set the color od the selection bar
 def slc_ltt_color_set():
-    global playlist_bar_color
+    global select_letter_color
 
     try:
 
@@ -417,10 +433,10 @@ controls_frame = Frame(root, bg=player_bg_color)
 controls_frame.pack(pady=120)
 
 #   Player control buttons
-back_btn = Button(controls_frame, image=back_img, borderwidth=0, command=back_song, bg=player_bg_color)
-pause_btn = Button(controls_frame, image=pause_img, borderwidth=0, command=pause, bg=player_bg_color)
-play_btn = Button(controls_frame, image=play_img, borderwidth=0, command=play, bg=player_bg_color)
-next_btn = Button(controls_frame, image=next_img, borderwidth=0, command=next_song, bg=player_bg_color)
+back_btn = Button(controls_frame, image=back_img, borderwidth=0, command=back_song)
+pause_btn = Button(controls_frame, image=pause_img, borderwidth=0, command=pause)
+play_btn = Button(controls_frame, image=play_img, borderwidth=0, command=play)
+next_btn = Button(controls_frame, image=next_img, borderwidth=0, command=next_song)
 
 
 #   Player control buttons position
@@ -467,3 +483,18 @@ set_color_menu.add_command(label='Playlist Bar Color', command=bar_color)
 set_color_menu.add_command(label='Selected letter color', command=slc_letter_color)
 
 root.mainloop()
+
+try:
+    theme = {}
+
+    theme['player_bg_color'] = player_bg_color
+    theme['playlist_viewer_color'] = playlist_viewer_color
+    theme['playlist_bar_color'] = playlist_bar_color
+    theme['letter_color'] = letter_color
+    theme['select_letter_color'] = select_letter_color
+
+    json.dump(theme, open('theme.json', 'w', encoding='utf-8', errors='ignore'))
+
+    reader.clouse()
+except:
+    pass
