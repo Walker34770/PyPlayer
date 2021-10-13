@@ -1,6 +1,8 @@
 #   LUAN ROCKENBACH DA SILVA
 #   26/09/2021
 #   Importação das bibliotecas necessárias
+import time
+
 import vlc
 from tkinter import *
 from tkinter import filedialog
@@ -82,7 +84,8 @@ def remove_song():
 
     if is_playing == song_box.get(ACTIVE):
         player.stop()
-        music_label.config(text='')
+        music_label.config(text='', bg=button_bg)
+        root.title('PyPlayer')
 
     song_box.delete(ANCHOR)
 
@@ -93,6 +96,7 @@ def remove_all_songs():
 
     player.stop()
     music_label.config(text='')
+    root.title('PyPlayer')
 
     song_box.delete(0, END)
 
@@ -102,7 +106,8 @@ def stop():
     global player
 
     player.stop()
-    music_label.config(text='')
+    music_label.config(text='', bg=button_bg)
+    root.title('PyPlayer')
 
 
 #   Play song function
@@ -124,8 +129,9 @@ def play():
         player.play()
         is_playing = music_name
 
-        music_label.config(text=music_name)
+        music_label.config(text=music_name, bg=button_bg)
         is_paused = False
+        root.title('PyPlayer - ' + music_name)
 
 
 #   Next song button
@@ -150,8 +156,9 @@ def next_song():
     player.play()
     is_playing = music_name
 
-    music_label.config(text=music_name)
+    music_label.config(text=music_name, bg=button_bg)
     is_paused = False
+    root.title('PyPlayer - ' + music_name)
 
 
     #   Move selection bar
@@ -182,8 +189,9 @@ def back_song():
     player.play()
     is_playing = music_name
 
-    music_label.config(text=music_name)
+    music_label.config(text=music_name, bg=button_bg)
     is_paused = False
+    root.title('PyPlayer - ' + music_name)
 
     #   Move selection bar
     song_box.select_clear(0, END)
@@ -199,11 +207,11 @@ def pause():
     if is_paused is False:
         player.pause()
         is_paused = True
-        pause_label.config(text='Paused')
+        pause_label.config(text='Paused', bg=button_bg)
 
     elif is_paused is True:
         player.pause()
-        pause_label.config(text='')
+        pause_label.config(text='', bg=button_bg)
         is_paused = False
 
 
@@ -233,6 +241,12 @@ def bg_color_set():
             next_btn.config(bg=player_bg_color)
             pause_btn.config(bg=player_bg_color)
             play_btn.config(bg=player_bg_color)
+
+            plus_btn.config(bg=player_bg_color)
+            less_btn.config(bg=player_bg_color)
+
+            music_label.config(bg=player_bg_color)
+            pause_label.config(bg=player_bg_color)
 
         if player_bg_color != 'black':
             button_bg = player_bg_color
@@ -458,7 +472,6 @@ def plus_volume():
     new_vol = current_vol + 10
     if new_vol <= 100:
         player.audio_set_volume(new_vol)
-    volume_label.config(text=player.audio_get_volume())
 
 
 #   Less volume function
@@ -469,7 +482,6 @@ def less_volume():
     new_vol = current_vol - 10
 
     player.audio_set_volume(new_vol)
-    volume_label.config(text=player.audio_get_volume())
 
 
 #   Playlist box
@@ -485,10 +497,6 @@ music_label.pack()
 #   Pause label
 pause_label = Label(root, text='', bg=player_bg_color)
 pause_label.pack()
-
-#   Volume label
-volume_label = Label(root, text='', bg=player_bg_color)
-volume_label.pack()
 
 
 #   Buttons background color variable control
