@@ -3,18 +3,18 @@
  
  ## To do List:
  
- - [ ] Add the play and pause buttons
- - [ ] Create the "Add song" menu and function
- - [ ] Create the play and pause functions
- - [ ] Add the next and forward buttons
- - [ ] create the next and forward functions
- - [ ] Create colors config menu
- - [ ] Create json file to save the colors config
- - [ ] Add volume buttons
- - [ ] Create the volume functions
- - [ ] Add the music name label
- - [ ] Add the "Paused" label
- - [ ] Add the volume label
+ - [x] Add the play and pause buttons (Luan)
+ - [x] Create the "Add song" menu and function (Luan)
+ - [x] Create the play and pause functions (Luan)
+ - [x] Add the next and forward buttons (Luan)
+ - [x] create the next and forward functions (Luan)
+ - [x] Create colors config menu (Luan)
+ - [x] Create json file to save the colors config (Luan)
+ - [x] Add volume buttons (Luan)
+ - [x] Create the volume functions (Luan)
+ - [x] Add the music name label (Luan)
+ - [x] Add the "Paused" label (Luan)
+ - [x] Add the volume label (Luan)
  - [ ] Add the current music nome to the player window
  - [ ] Add the download song menu
  - [ ] Create file to save the added songs
