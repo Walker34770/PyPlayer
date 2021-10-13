@@ -15,7 +15,7 @@
  - [x] Add the music name label (Luan)
  - [x] Add the "Paused" label (Luan)
  - [ ] Add the volume label
- - [ ] Add the current music nome to the player window
+ - [x] Add the current music nome to the player window (Luan)
  - [ ] Add the download song menu
  - [ ] Create file to save the added songs
  - [ ] Create the shuffle button and function
