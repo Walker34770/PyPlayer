@@ -9,32 +9,36 @@ import json
 import os
 
 
-#   variáveis
+#   Initial Variables
 player = None
 is_playing = None
 user_name = os.environ.get("USERNAME")
 input_tk = None
 new_window = None
 letter_input_tk = None
+is_paused = None
 
-#   Player colors set variables
-
+#   Reading in the json file the last colors player set configurations
 try:
-    reader = json.load(open('theme.json', 'r', encoding='utf-8', errors='ignore'))
+    with open('theme.json', 'r', encoding='utf-8', errors='ignore') as jfile:
 
-    player_bg_color = reader.get('player_bg_color', 'white')
-    playlist_viewer_color = reader.get('playlist_viewer_color', 'black')
-    playlist_bar_color = reader.get('playlist_bar_color', 'white')
-    letter_color = reader.get('letter_color', '#fcb505')
-    select_letter_color = reader.get('select_letter_color', 'black')
+        reader = json.load(jfile)
+
+        player_bg_color = reader.get('player_bg_color', 'white')
+        playlist_viewer_color = reader.get('playlist_viewer_color', 'black')
+        playlist_bar_color = reader.get('playlist_bar_color', 'white')
+        letter_color = reader.get('letter_color', '#fcb505')
+        select_letter_color = reader.get('select_letter_color', 'black')
 
 
-except:
+except FileNotFoundError:
+    #   Players colors set variables
     player_bg_color = 'white'
     playlist_viewer_color = 'black'
     playlist_bar_color = 'white'
     letter_color = '#fcb505'
     select_letter_color = 'black'
+
 
 #   Stating Tkinter window
 root = Tk()
@@ -78,6 +82,7 @@ def remove_song():
 
     if is_playing == song_box.get(ACTIVE):
         player.stop()
+        music_label.config(text='')
 
     song_box.delete(ANCHOR)
 
@@ -87,6 +92,7 @@ def remove_all_songs():
     global player
 
     player.stop()
+    music_label.config(text='')
 
     song_box.delete(0, END)
 
@@ -96,12 +102,14 @@ def stop():
     global player
 
     player.stop()
+    music_label.config(text='')
 
 
 #   Play song function
 def play():
     global player
     global is_playing
+    global is_paused
 
     if song_box.get(ACTIVE) == is_playing:
         pass
@@ -116,11 +124,15 @@ def play():
         player.play()
         is_playing = music_name
 
+        music_label.config(text=music_name)
+        is_paused = False
+
 
 #   Next song button
 def next_song():
     global player
     global is_playing
+    global is_paused
 
     #   Get the current song tuple number
     next = song_box.curselection()
@@ -138,16 +150,21 @@ def next_song():
     player.play()
     is_playing = music_name
 
+    music_label.config(text=music_name)
+    is_paused = False
+
+
     #   Move selection bar
     song_box.select_clear(0, END)
     song_box.activate(next)
     song_box.select_set(next, last=None)
 
 
-#   Foward song button
+#   Forward song button
 def back_song():
     global player
     global is_playing
+    global is_paused
 
     #   Get the current song tuple number
     back = song_box.curselection()
@@ -165,6 +182,9 @@ def back_song():
     player.play()
     is_playing = music_name
 
+    music_label.config(text=music_name)
+    is_paused = False
+
     #   Move selection bar
     song_box.select_clear(0, END)
     song_box.activate(back)
@@ -174,8 +194,17 @@ def back_song():
 #   Pause song function
 def pause():
     global player
+    global is_paused
 
-    player.pause()
+    if is_paused is False:
+        player.pause()
+        is_paused = True
+        pause_label.config(text='Paused')
+
+    elif is_paused is True:
+        player.pause()
+        pause_label.config(text='')
+        is_paused = False
 
 
 #   START OF THE PERSONALIZATION FUNCTIONS
@@ -186,6 +215,7 @@ def pause():
 def bg_color_set():
     global input_tk
     global player_bg_color
+    global button_bg
 
     try:
 
@@ -204,12 +234,17 @@ def bg_color_set():
             pause_btn.config(bg=player_bg_color)
             play_btn.config(bg=player_bg_color)
 
+        if player_bg_color != 'black':
+            button_bg = player_bg_color
+        else:
+            button_bg = 'white'
+
 
     except:
         new_window.destroy()
 
 
-# Change player backgroud color
+# Change player background color
 def bg_color():
     global player_bg_color
     global input_tk
@@ -228,7 +263,7 @@ def bg_color():
 
     input_tk = Entry(new_window, width=50, borderwidth=3, bg='gainsboro')
     input_tk.pack(pady=50)
-    input_tk.insert(0, 'tipe the color or RGB code Here ')
+    input_tk.insert(0, 'type the color or RGB code Here ')
 
     button = Button(new_window, text='Confirm', command=bg_color_set)
     button.pack()
@@ -272,7 +307,7 @@ def lt_color():
 
     input_tk = Entry(new_window, width=50, borderwidth=3, bg='gainsboro')
     input_tk.pack(pady=50)
-    input_tk.insert(0, 'tipe the color or RGB code Here ')
+    input_tk.insert(0, 'type the color or RGB code Here ')
 
     button = Button(new_window, text='Confirm', command=letter_color_set)
     button.pack()
@@ -415,11 +450,52 @@ def slc_letter_color():
 #   END OF THE PERSONALIZATION FUNCTIONS
 #   END OF THE PERSONALIZATION FUNCTIONS
 
+#   Plus volume function
+def plus_volume():
+    global player
+
+    current_vol = player.audio_get_volume()
+    new_vol = current_vol + 10
+    if new_vol <= 100:
+        player.audio_set_volume(new_vol)
+    volume_label.config(text=player.audio_get_volume())
+
+
+#   Less volume function
+def less_volume():
+    global player
+
+    current_vol = player.audio_get_volume()
+    new_vol = current_vol - 10
+
+    player.audio_set_volume(new_vol)
+    volume_label.config(text=player.audio_get_volume())
+
 
 #   Playlist box
 song_box = Listbox(root, bg=playlist_viewer_color, fg=letter_color, width=61,
                    selectbackground=playlist_bar_color, selectforeground=select_letter_color)
 song_box.pack()
+
+
+#   Music name label
+music_label = Label(root, text='', bg=player_bg_color)
+music_label.pack()
+
+#   Pause label
+pause_label = Label(root, text='', bg=player_bg_color)
+pause_label.pack()
+
+#   Volume label
+volume_label = Label(root, text='', bg=player_bg_color)
+volume_label.pack()
+
+
+#   Buttons background color variable control
+if player_bg_color != 'black':
+    button_bg = player_bg_color
+else:
+    button_bg = 'white'
 
 #   Player control buttons images
 back_img = PhotoImage(file='back.png')
@@ -427,23 +503,38 @@ next_img = PhotoImage(file='next.png')
 pause_img = PhotoImage(file='pause.png')
 play_img = PhotoImage(file='play.png')
 
+plus_vol = PhotoImage(file='plus.png')
+less_vol = PhotoImage(file='subtraction.png')
+
 
 #   Player control buttons frames
 controls_frame = Frame(root, bg=player_bg_color)
-controls_frame.pack(pady=120)
+controls_frame.pack()
 
 #   Player control buttons
-back_btn = Button(controls_frame, image=back_img, borderwidth=0, command=back_song)
-pause_btn = Button(controls_frame, image=pause_img, borderwidth=0, command=pause)
-play_btn = Button(controls_frame, image=play_img, borderwidth=0, command=play)
-next_btn = Button(controls_frame, image=next_img, borderwidth=0, command=next_song)
-
+back_btn = Button(controls_frame, image=back_img, borderwidth=0, command=back_song, bg=button_bg)
+pause_btn = Button(controls_frame, image=pause_img, borderwidth=0, command=pause, bg=button_bg)
+play_btn = Button(controls_frame, image=play_img, borderwidth=0, command=play, bg=button_bg)
+next_btn = Button(controls_frame, image=next_img, borderwidth=0, command=next_song, bg=button_bg)
 
 #   Player control buttons position
 back_btn.grid(row=0, column=0, padx=10)
 pause_btn.grid(row=0, column=1, padx=10)
 play_btn.grid(row=0, column=2, padx=10)
 next_btn.grid(row=0, column=3, padx=10)
+
+
+#   Player volume buttons frames
+volume_frame = Frame(root, bg=player_bg_color)
+volume_frame.pack()
+
+#   Player volume buttons
+plus_btn = Button(controls_frame, image=plus_vol, borderwidth=0, bg=button_bg, command=plus_volume)
+less_btn = Button(controls_frame, image=less_vol, borderwidth=0, bg=button_bg, command=less_volume)
+
+#   Player volume buttons position
+less_btn.grid(row=1, column=1, pady=30)
+plus_btn.grid(row=1, column=2, pady=30)
 
 
 #   Player Menu
@@ -484,7 +575,9 @@ set_color_menu.add_command(label='Selected letter color', command=slc_letter_col
 
 root.mainloop()
 
-try:
+
+#   Saving color configurations
+with open('theme.json', 'w', encoding='utf-8', errors='ignore') as theme_file:
     theme = {}
 
     theme['player_bg_color'] = player_bg_color
@@ -493,8 +586,4 @@ try:
     theme['letter_color'] = letter_color
     theme['select_letter_color'] = select_letter_color
 
-    json.dump(theme, open('theme.json', 'w', encoding='utf-8', errors='ignore'))
-
-    reader.clouse()
-except:
-    pass
+    json.dump(theme, theme_file)
