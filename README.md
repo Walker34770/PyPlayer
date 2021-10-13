@@ -14,7 +14,7 @@
  - [x] Create the volume functions (Luan)
  - [x] Add the music name label (Luan)
  - [x] Add the "Paused" label (Luan)
- - [x] Add the volume label (Luan)
+ - [ ] Add the volume label
  - [ ] Add the current music nome to the player window
  - [ ] Add the download song menu
  - [ ] Create file to save the added songs
