@@ -9,6 +9,8 @@ from tkinter import filedialog
 from tkinter import font
 import json
 import os
+import time
+from mutagen.mp3 import MP3
 
 
 #   Initial Variables
@@ -101,6 +103,35 @@ def remove_all_songs():
     song_box.delete(0, END)
 
 
+#   Get the current time of the playing song
+def current_song_length():
+
+    #   Get the current song time (on ms) and convert to sec
+    current = player.get_time() / 1000
+
+    # Get the time converted to sec and put it on time format
+    current_song_intime_format = time.strftime('%M:%S', time.gmtime(current))
+    #   Shows the current time on time format
+    current_time.config(text=current_song_intime_format, bg=button_bg)
+
+    current_time.after(1000, current_song_length)
+
+    #   Get the total length of the current song
+
+    total_song_current = song_box.curselection()
+
+    music_name = song_box.get(total_song_current)
+
+    current_song = f'C:/Users/{user_name}/Music/{music_name}.mp3'
+    current_song_mp3 = MP3(current_song)
+
+    song_total_length = current_song_mp3.info.length
+
+    length_converted_totime = time.strftime('%M:%S', time.gmtime(song_total_length))
+
+    total_song_time.config(text=' - ' + length_converted_totime, bg=button_bg)
+
+
 #   Stop Menu button
 def stop():
     global player
@@ -133,6 +164,8 @@ def play():
         is_paused = False
         root.title('PyPlayer - ' + music_name)
 
+        current_song_length()
+
 
 #   Next song button
 def next_song():
@@ -159,7 +192,6 @@ def next_song():
     music_label.config(text=music_name, bg=button_bg)
     is_paused = False
     root.title('PyPlayer - ' + music_name)
-
 
     #   Move selection bar
     song_box.select_clear(0, END)
@@ -235,6 +267,8 @@ def bg_color_set():
         #   Changing the colors
         root.config(background=player_bg_color)
         controls_frame.config(bg=player_bg_color)
+        time_frame.config(bg=player_bg_color)
+        volume_frame.config(bg=player_bg_color)
 
         if player_bg_color != 'black':
             back_btn.config(bg=player_bg_color)
@@ -464,6 +498,7 @@ def slc_letter_color():
 #   END OF THE PERSONALIZATION FUNCTIONS
 #   END OF THE PERSONALIZATION FUNCTIONS
 
+
 #   Plus volume function
 def plus_volume():
     global player
@@ -484,26 +519,37 @@ def less_volume():
     player.audio_set_volume(new_vol)
 
 
-#   Playlist box
-song_box = Listbox(root, bg=playlist_viewer_color, fg=letter_color, width=61,
-                   selectbackground=playlist_bar_color, selectforeground=select_letter_color)
-song_box.pack()
-
-
-#   Music name label
-music_label = Label(root, text='', bg=player_bg_color)
-music_label.pack()
-
-#   Pause label
-pause_label = Label(root, text='', bg=player_bg_color)
-pause_label.pack()
-
-
 #   Buttons background color variable control
 if player_bg_color != 'black':
     button_bg = player_bg_color
 else:
     button_bg = 'white'
+
+#   Playlist box
+song_box = Listbox(root, bg=playlist_viewer_color, fg=letter_color, width=61,
+                   selectbackground=playlist_bar_color, selectforeground=select_letter_color)
+song_box.pack()
+
+#   Music name label
+music_label = Label(root, text='', bg=player_bg_color)
+music_label.pack()
+
+
+#   Song length label
+time_frame = LabelFrame(root, bg=player_bg_color, borderwidth=0)
+time_frame.pack()
+
+current_time = Label(time_frame, text='', bg=button_bg, borderwidth=0)
+total_song_time = Label(time_frame, text='', bg=button_bg, borderwidth=0)
+
+current_time.grid(row=0, column=1, pady=10)
+total_song_time.grid(row=0, column=2, pady=10)
+
+
+#   Pause label
+pause_label = Label(root, text='', bg=player_bg_color)
+pause_label.pack()
+
 
 #   Player control buttons images
 back_img = PhotoImage(file='back.png')
@@ -537,12 +583,12 @@ volume_frame = Frame(root, bg=player_bg_color)
 volume_frame.pack()
 
 #   Player volume buttons
-plus_btn = Button(controls_frame, image=plus_vol, borderwidth=0, bg=button_bg, command=plus_volume)
-less_btn = Button(controls_frame, image=less_vol, borderwidth=0, bg=button_bg, command=less_volume)
+plus_btn = Button(volume_frame, image=plus_vol, borderwidth=0, bg=button_bg, command=plus_volume)
+less_btn = Button(volume_frame, image=less_vol, borderwidth=0, bg=button_bg, command=less_volume)
 
 #   Player volume buttons position
-less_btn.grid(row=1, column=1, pady=30)
-plus_btn.grid(row=1, column=2, pady=30)
+less_btn.grid(row=0, column=1, pady=30, padx=8)
+plus_btn.grid(row=0, column=2, pady=30, padx=8)
 
 
 #   Player Menu
