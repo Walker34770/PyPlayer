@@ -17,7 +17,7 @@
  - [x] Add the "Paused" label (Luan)
  - [ ] Add the volume label
  - [x] Add the current music nome to the player window (Luan)
- - [ ] Create the song lenght
+ - [x] Create the song length
  - [ ] Add the song lenght slider
  - [ ] Create the auto next song function (change the song when one ends)
  - [ ] Add the download song menu
