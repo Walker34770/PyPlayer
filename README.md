@@ -17,7 +17,7 @@
  - [x] Add the "Paused" label (Luan)
  - [ ] Add the volume label
  - [x] Add the current music nome to the player window (Luan)
- - [ ] Create the song lenght
+ - [x] Create the song length
  - [ ] Add the song lenght slider
  - [ ] Create the auto next song function (change the song when one ends)
  - [ ] Add the download song menu
@@ -27,7 +27,7 @@
  - [ ] Create function to serch and download the current music album image
  - [ ] Replace the Listbox for the music album image
  - [ ] Create the button and function to visualize the playlist
- - [ ] Fix the color set bug
+ - [x] Fix the color set bug
  
 ...
  
