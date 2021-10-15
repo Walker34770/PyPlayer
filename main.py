@@ -1,8 +1,6 @@
 #   LUAN ROCKENBACH DA SILVA
 #   26/09/2021
 #   Importação das bibliotecas necessárias
-import time
-from json import JSONDecodeError
 
 import vlc
 from tkinter import *
@@ -13,6 +11,7 @@ import os
 import time
 from mutagen.mp3 import MP3
 from colour import Color
+import simplejson
 
 
 #   Initial Variables
@@ -23,6 +22,7 @@ input_tk = None
 new_window = None
 letter_input_tk = None
 is_paused = None
+imported_songs = []
 
 #   Reading in the json file the last colors player set configurations
 try:
@@ -66,6 +66,7 @@ def add_song():
     song = song_dir.replace(f'C:/Users/{user_name}/Music/', '')
     song = song.replace('.mp3', '')
     song_box.insert(END, song)
+    imported_songs.append(song + '\n')
 
     #   Turning song box strings into bold
     bolded = font.Font(weight='bold', size='10')  # will use the default font
@@ -81,6 +82,7 @@ def add_many_songs():
         song = song.replace(f'C:/Users/{user_name}/Music/', '')
         song = song.replace('.mp3', '')
         song_box.insert(END, song)
+        imported_songs.append(song + '\n')
 
 
 #   Remove Song Menu
@@ -94,19 +96,24 @@ def remove_song():
         current_time.config(text='', bg=player_bg_color, fg=song_label_color)
         root.title('PyPlayer')
 
+    song_to_erase = song_box.get(song_box.curselection())
+    imported_songs.remove(song_to_erase + '\n')
     song_box.delete(ANCHOR)
 
 
 #   Remove all Songs of the Playlist
 def remove_all_songs():
     global player
-
-    player.stop()
+    try:
+        player.stop()
+    except AttributeError:
+        pass
     music_label.config(text='', bg=player_bg_color, fg=song_label_color)
     current_time.config(text='', bg=player_bg_color, fg=song_label_color)
     root.title('PyPlayer')
 
     song_box.delete(0, END)
+    imported_songs.clear()
 
 
 #   Get the current time of the playing song
@@ -167,7 +174,9 @@ def play():
         player.play()
         is_playing = music_name
 
-        music_label.config(text=music_name, bg=player_bg_color, fg=song_label_color)
+        bolded = font.Font(weight='bold', size='10', underline=1)
+        music_label.config(text=music_name, bg=player_bg_color, fg=song_label_color, font=bolded)
+
         is_paused = False
         root.title('PyPlayer - ' + music_name)
 
@@ -196,7 +205,9 @@ def next_song():
     player.play()
     is_playing = music_name
 
-    music_label.config(text=music_name, bg=player_bg_color, fg=song_label_color)
+    bolded = font.Font(weight='bold', size='10', underline=1)
+    music_label.config(text=music_name, bg=player_bg_color, fg=song_label_color, font=bolded)
+
     is_paused = False
     root.title('PyPlayer - ' + music_name)
 
@@ -228,7 +239,9 @@ def back_song():
     player.play()
     is_playing = music_name
 
-    music_label.config(text=music_name, bg=player_bg_color, fg=song_label_color)
+    bolded = font.Font(weight='bold', size='10', underline=1)
+    music_label.config(text=music_name, bg=player_bg_color, fg=song_label_color, font=bolded)
+
     is_paused = False
     root.title('PyPlayer - ' + music_name)
 
@@ -645,6 +658,21 @@ song_box = Listbox(root, bg=playlist_viewer_color, fg=letter_color, width=61,
                    selectbackground=playlist_bar_color, selectforeground=select_letter_color)
 song_box.pack()
 
+
+#   Insert the saved songs to the listbox
+try:
+    with open('save_songs.txt', 'r', encoding='utf-8', errors='ignore') as songs:
+
+        music = songs.readlines()
+
+        for song in music:
+            sg = str(song).replace('\n', '')
+            song_box.insert(END, sg)
+            imported_songs.append(sg + '\n')
+
+except:
+    pass
+
 #   Music name label
 music_label = Label(root, text='', bg=player_bg_color)
 music_label.pack()
@@ -743,7 +771,13 @@ set_color_menu.add_command(label='Playlist Bar Color', command=bar_color)
 set_color_menu.add_command(label='Selected letter color', command=slc_letter_color)
 set_color_menu.add_command(label='song information color', command=song_label_color_info)
 
+
 root.mainloop()
+
+with open('save_songs.txt', 'w', encoding='utf-8', errors='ignore') as songs:
+
+    for sg in imported_songs:
+        songs.write(sg)
 
 
 #   Saving color configurations
