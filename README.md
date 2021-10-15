@@ -21,13 +21,13 @@
  - [ ] Add the song lenght slider
  - [ ] Create the auto next song function (change the song when one ends)
  - [ ] Add the download song menu
- - [ ] Create file to save the added songs
+ - [x] Create file to save the added songs (Luan)
  - [ ] Create the shuffle button and function
  - [ ] Create instructions
  - [ ] Create function to serch and download the current music album image
  - [ ] Replace the Listbox for the music album image
  - [ ] Create the button and function to visualize the playlist
- - [x] Fix the color set bug
+ - [x] Fix the color set bug (Luan)
  
 ...
  
