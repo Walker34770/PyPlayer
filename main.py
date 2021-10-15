@@ -35,6 +35,7 @@ try:
         playlist_bar_color = reader.get('playlist_bar_color', 'white')
         letter_color = reader.get('letter_color', '#fcb505')
         select_letter_color = reader.get('select_letter_color', 'black')
+        song_label_color = reader.get('song_info_label', 'black')
 
 
 except FileNotFoundError:
@@ -44,6 +45,7 @@ except FileNotFoundError:
     playlist_bar_color = 'white'
     letter_color = '#fcb505'
     select_letter_color = 'black'
+    song_label_color = 'black'
 
 
 #   Stating Tkinter window
@@ -88,8 +90,8 @@ def remove_song():
 
     if is_playing == song_box.get(ACTIVE):
         player.stop()
-        music_label.config(text='', bg=player_bg_color, fg=button_bg)
-        current_time.config(text='', bg=player_bg_color, fg=button_bg)
+        music_label.config(text='', bg=player_bg_color, fg=song_label_color)
+        current_time.config(text='', bg=player_bg_color, fg=song_label_color)
         root.title('PyPlayer')
 
     song_box.delete(ANCHOR)
@@ -100,8 +102,8 @@ def remove_all_songs():
     global player
 
     player.stop()
-    music_label.config(text='', bg=player_bg_color, fg=button_bg)
-    current_time.config(text='', bg=player_bg_color, fg=button_bg)
+    music_label.config(text='', bg=player_bg_color, fg=song_label_color)
+    current_time.config(text='', bg=player_bg_color, fg=song_label_color)
     root.title('PyPlayer')
 
     song_box.delete(0, END)
@@ -116,7 +118,7 @@ def current_song_length():
     # Get the time converted to sec and put it on time format
     current_song_intime_format = time.strftime('%M:%S', time.gmtime(current))
     #   Shows the current time on time format
-    current_time.config(text=current_song_intime_format, bg=button_bg)
+    current_time.config(text=current_song_intime_format, bg=player_bg_color, fg=song_label_color)
 
     current_time.after(1000, current_song_length)
 
@@ -133,7 +135,7 @@ def current_song_length():
 
     length_converted_totime = time.strftime('%M:%S', time.gmtime(song_total_length))
 
-    total_song_time.config(text=' - ' + length_converted_totime, bg=button_bg)
+    total_song_time.config(text=' - ' + length_converted_totime, bg=player_bg_color, fg=song_label_color)
 
 
 #   Stop Menu button
@@ -141,8 +143,8 @@ def stop():
     global player
 
     player.stop()
-    music_label.config(text='', bg=button_bg)
-    current_time.config(text='', bg=button_bg)
+    music_label.config(text='', bg=player_bg_color)
+    current_time.config(text='', bg=player_bg_color)
     root.title('PyPlayer')
 
 
@@ -165,7 +167,7 @@ def play():
         player.play()
         is_playing = music_name
 
-        music_label.config(text=music_name, bg=button_bg)
+        music_label.config(text=music_name, bg=player_bg_color, fg=song_label_color)
         is_paused = False
         root.title('PyPlayer - ' + music_name)
 
@@ -194,7 +196,7 @@ def next_song():
     player.play()
     is_playing = music_name
 
-    music_label.config(text=music_name, bg=button_bg)
+    music_label.config(text=music_name, bg=player_bg_color, fg=song_label_color)
     is_paused = False
     root.title('PyPlayer - ' + music_name)
 
@@ -226,7 +228,7 @@ def back_song():
     player.play()
     is_playing = music_name
 
-    music_label.config(text=music_name, bg=button_bg)
+    music_label.config(text=music_name, bg=player_bg_color, fg=song_label_color)
     is_paused = False
     root.title('PyPlayer - ' + music_name)
 
@@ -244,11 +246,11 @@ def pause():
     if is_paused is False:
         player.pause()
         is_paused = True
-        pause_label.config(text='Paused', bg=button_bg)
+        pause_label.config(text='Paused', bg=player_bg_color, fg=song_label_color)
 
     elif is_paused is True:
         player.pause()
-        pause_label.config(text='', bg=button_bg)
+        pause_label.config(text='', bg=player_bg_color, fg=song_label_color)
         is_paused = False
 
 
@@ -273,46 +275,51 @@ def bg_color_set():
     global player_bg_color
     global button_bg
 
-    #   Take the input of the color set window
-    player_bg_color = input_tk.get()
 
-    if check_color(player_bg_color) is True:
+    try:
 
-        try:
+        #   Take the input of the color set window
+        if check_color(input_tk.get()) is True:
+            player_bg_color = input_tk.get()
+        else:
+            player_bg_color = 'white'
 
-            new_window.destroy()
+        new_window.destroy()
 
-            #   Changing the colors
-            root.config(background=player_bg_color)
-            controls_frame.config(bg=player_bg_color)
-            time_frame.config(bg=player_bg_color)
-            volume_frame.config(bg=player_bg_color)
+        #   Changing the colors
+        root.config(background=player_bg_color)
+        controls_frame.config(bg=player_bg_color)
+        time_frame.config(bg=player_bg_color)
+        volume_frame.config(bg=player_bg_color)
 
-            if player_bg_color != 'black':
-                back_btn.config(bg=player_bg_color)
-                next_btn.config(bg=player_bg_color)
-                pause_btn.config(bg=player_bg_color)
-                play_btn.config(bg=player_bg_color)
+        if player_bg_color != 'black':
+            back_btn.config(bg=player_bg_color)
+            next_btn.config(bg=player_bg_color)
+            pause_btn.config(bg=player_bg_color)
+            play_btn.config(bg=player_bg_color)
 
-                plus_btn.config(bg=player_bg_color)
-                less_btn.config(bg=player_bg_color)
+            plus_btn.config(bg=player_bg_color)
+            less_btn.config(bg=player_bg_color)
 
-                music_label.config(bg=player_bg_color)
-                pause_label.config(bg=player_bg_color)
+            button_bg = player_bg_color
 
-                current_time.config(bg=player_bg_color)
-                total_song_time.config(bg=player_bg_color)
+        elif player_bg_color == 'black':
+            music_label.config(bg=player_bg_color, fg='white')
+            pause_label.config(bg=player_bg_color, fg='white')
 
-            if player_bg_color != 'black':
-                button_bg = player_bg_color
-            else:
-                button_bg = 'white'
+            current_time.config(bg=player_bg_color, fg='white')
+            total_song_time.config(bg=player_bg_color, fg='white')
 
-        except:
-            new_window.destroy()
+        else:
+            button_bg = 'white'
 
-    elif check_color(player_bg_color) is False:
-        player_bg_color = 'white'
+        music_label.config(bg=player_bg_color, fg=song_label_color)
+        pause_label.config(bg=player_bg_color, fg=song_label_color)
+
+        current_time.config(bg=player_bg_color, fg=song_label_color)
+        total_song_time.config(bg=player_bg_color, fg=song_label_color)
+
+    except:
         new_window.destroy()
 
 
@@ -353,7 +360,11 @@ def letter_color_set():
     try:
 
         #   Take the input od the color set window
-        letter_color = input_tk.get()
+        if check_color(input_tk.get()) is True:
+            letter_color = input_tk.get()
+        else:
+            letter_color = '#fcb505'
+
         new_window.destroy()
 
         #   Changing the colors
@@ -399,7 +410,11 @@ def viewer_color_set():
     try:
 
         #   Take the input od the color set window
-        playlist_viewer_color = input_tk.get()
+        if check_color(input_tk.get()) is True:
+            playlist_viewer_color = input_tk.get()
+        else:
+            playlist_viewer_color = 'black'
+
         new_window.destroy()
 
         #   Changing the colors
@@ -446,7 +461,11 @@ def bar_color_set():
     try:
 
         #   Take the input od the color set window
-        playlist_bar_color = input_tk.get()
+        if check_color(input_tk.get()) is True:
+            playlist_bar_color = input_tk.get()
+        else:
+            playlist_bar_color = 'white'
+
         new_window.destroy()
 
         #   Changing the colors
@@ -493,7 +512,11 @@ def slc_ltt_color_set():
     try:
 
         #   Take the input od the color set window
-        select_letter_color = input_tk.get()
+        if check_color(input_tk.get()) is True:
+            select_letter_color = input_tk.get()
+        else:
+            select_letter_color = 'black'
+
         new_window.destroy()
 
         #   Changing the colors
@@ -528,6 +551,59 @@ def slc_letter_color():
     input_tk.insert(0, 'tipe the color or RGB code Here ')
 
     button = Button(new_window, text='Confirm', command=slc_ltt_color_set)
+    button.pack()
+
+    new_window.mainloop()
+
+
+#   Set the music info colors
+def song_label_color_set():
+    global song_label_color
+
+    try:
+
+        #   Take the input od the color set window
+        if check_color(input_tk.get()) is True:
+            song_label_color = input_tk.get()
+        else:
+            song_label = 'black'
+
+        new_window.destroy()
+
+        #   Changing the colors
+        pause_label.config(fg=song_label_color)
+        music_label.config(fg=song_label_color)
+        total_song_time.config(fg=song_label_color)
+        current_time.config(fg=song_label_color)
+
+    except:
+        new_window.destroy()
+
+
+#   Change the music info colors
+def song_label_color_info():
+    global input_tk
+    global new_window
+
+    new_window = Toplevel(root)
+    new_window.geometry('200x200')
+    if check_color(player_bg_color) is True:
+        new_window['bg'] = player_bg_color
+    else:
+        new_window['bg'] = 'white'
+
+    my_label = Label(new_window, text="Write the name of the color \n"
+                                      "or RGB color with the # \n"
+                                      "to set the music info colors", bg='gainsboro', fg='black')
+    bolded = font.Font(weight='bold', size='8')  # will use the default font
+    my_label.config(font=bolded)
+    my_label.pack()
+
+    input_tk = Entry(new_window, width=50, borderwidth=3, bg='gainsboro')
+    input_tk.pack(pady=50)
+    input_tk.insert(0, 'type the color or RGB code Here ')
+
+    button = Button(new_window, text='Confirm', command=song_label_color_set)
     button.pack()
 
     new_window.mainloop()
@@ -578,8 +654,8 @@ music_label.pack()
 time_frame = LabelFrame(root, bg=player_bg_color, borderwidth=0)
 time_frame.pack()
 
-current_time = Label(time_frame, text='', bg=button_bg, borderwidth=0)
-total_song_time = Label(time_frame, text='', bg=button_bg, borderwidth=0)
+current_time = Label(time_frame, text='', bg=player_bg_color, borderwidth=0)
+total_song_time = Label(time_frame, text='', bg=player_bg_color, borderwidth=0)
 
 current_time.grid(row=0, column=1, pady=10)
 total_song_time.grid(row=0, column=2, pady=10)
@@ -665,6 +741,7 @@ set_color_menu.add_command(label='Letters color', command=lt_color)
 set_color_menu.add_command(label='Playlist Viewer color', command=viewer_color)
 set_color_menu.add_command(label='Playlist Bar Color', command=bar_color)
 set_color_menu.add_command(label='Selected letter color', command=slc_letter_color)
+set_color_menu.add_command(label='song information color', command=song_label_color_info)
 
 root.mainloop()
 
@@ -673,32 +750,11 @@ root.mainloop()
 with open('theme.json', 'w', encoding='utf-8', errors='ignore') as theme_file:
     theme = {}
 
-    #   Giant block of code to verify if the color tha will be save exist
-    #   SORRY, I TRY USE AN "FOR" BUT DOESN'T WORK
-
-    if check_color(player_bg_color) is True:
-        theme['player_bg_color'] = player_bg_color
-    else:
-        theme['player_bg_color'] = 'white'
-
-    if check_color(playlist_viewer_color) is True:
-        theme['playlist_viewer_color'] = playlist_viewer_color
-    else:
-        theme['playlist_viewer_color'] = 'black'
-
-    if check_color(playlist_bar_color) is True:
-        theme['playlist_bar_color'] = playlist_bar_color
-    else:
-        theme['playlist_bar_color'] = 'white'
-
-    if check_color(letter_color) is True:
-        theme['letter_color'] = letter_color
-    else:
-        theme['letter_color'] = '#fcb505'
-
-    if check_color(select_letter_color) is True:
-        theme['select_letter_color'] = select_letter_color
-    else:
-        theme['select_letter_color'] = 'black'
+    theme['player_bg_color'] = player_bg_color
+    theme['playlist_viewer_color'] = playlist_viewer_color
+    theme['playlist_bar_color'] = playlist_bar_color
+    theme['letter_color'] = letter_color
+    theme['select_letter_color'] = select_letter_color
+    theme['song_info_label'] = song_label_color
 
     json.dump(theme, theme_file)
