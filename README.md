@@ -27,7 +27,7 @@
  - [ ] Create function to serch and download the current music album image
  - [ ] Replace the Listbox for the music album image
  - [ ] Create the button and function to visualize the playlist
- - [ ] Fix the color set bug
+ - [x] Fix the color set bug
  
 ...
  
