@@ -2,6 +2,7 @@
 #   26/09/2021
 #   Importação das bibliotecas necessárias
 import time
+from json import JSONDecodeError
 
 import vlc
 from tkinter import *
@@ -11,6 +12,7 @@ import json
 import os
 import time
 from mutagen.mp3 import MP3
+from colour import Color
 
 
 #   Initial Variables
@@ -86,7 +88,8 @@ def remove_song():
 
     if is_playing == song_box.get(ACTIVE):
         player.stop()
-        music_label.config(text='', bg=button_bg)
+        music_label.config(text='', bg=player_bg_color, fg=button_bg)
+        current_time.config(text='', bg=player_bg_color, fg=button_bg)
         root.title('PyPlayer')
 
     song_box.delete(ANCHOR)
@@ -97,7 +100,8 @@ def remove_all_songs():
     global player
 
     player.stop()
-    music_label.config(text='')
+    music_label.config(text='', bg=player_bg_color, fg=button_bg)
+    current_time.config(text='', bg=player_bg_color, fg=button_bg)
     root.title('PyPlayer')
 
     song_box.delete(0, END)
@@ -138,6 +142,7 @@ def stop():
 
     player.stop()
     music_label.config(text='', bg=button_bg)
+    current_time.config(text='', bg=button_bg)
     root.title('PyPlayer')
 
 
@@ -251,44 +256,63 @@ def pause():
 #   START OF THE PERSONALIZATION FUNCTIONS
 #   START OF THE PERSONALIZATION FUNCTIONS
 
+#   Function to check if an color exist or not
+def check_color(color):
+    try:
+        color = color.replace(' ', '')
+        Color(color)
+        # if everything goes fine then return True
+        return True
+    except ValueError:  # The color code was not found
+        return False
+
+
 #   Set the background player color
 def bg_color_set():
     global input_tk
     global player_bg_color
     global button_bg
 
-    try:
+    #   Take the input of the color set window
+    player_bg_color = input_tk.get()
 
-        #   Take the input od the color set window
-        player_bg_color = input_tk.get()
+    if check_color(player_bg_color) is True:
 
-        new_window.destroy()
+        try:
 
-        #   Changing the colors
-        root.config(background=player_bg_color)
-        controls_frame.config(bg=player_bg_color)
-        time_frame.config(bg=player_bg_color)
-        volume_frame.config(bg=player_bg_color)
+            new_window.destroy()
 
-        if player_bg_color != 'black':
-            back_btn.config(bg=player_bg_color)
-            next_btn.config(bg=player_bg_color)
-            pause_btn.config(bg=player_bg_color)
-            play_btn.config(bg=player_bg_color)
+            #   Changing the colors
+            root.config(background=player_bg_color)
+            controls_frame.config(bg=player_bg_color)
+            time_frame.config(bg=player_bg_color)
+            volume_frame.config(bg=player_bg_color)
 
-            plus_btn.config(bg=player_bg_color)
-            less_btn.config(bg=player_bg_color)
+            if player_bg_color != 'black':
+                back_btn.config(bg=player_bg_color)
+                next_btn.config(bg=player_bg_color)
+                pause_btn.config(bg=player_bg_color)
+                play_btn.config(bg=player_bg_color)
 
-            music_label.config(bg=player_bg_color)
-            pause_label.config(bg=player_bg_color)
+                plus_btn.config(bg=player_bg_color)
+                less_btn.config(bg=player_bg_color)
 
-        if player_bg_color != 'black':
-            button_bg = player_bg_color
-        else:
-            button_bg = 'white'
+                music_label.config(bg=player_bg_color)
+                pause_label.config(bg=player_bg_color)
 
+                current_time.config(bg=player_bg_color)
+                total_song_time.config(bg=player_bg_color)
 
-    except:
+            if player_bg_color != 'black':
+                button_bg = player_bg_color
+            else:
+                button_bg = 'white'
+
+        except:
+            new_window.destroy()
+
+    elif check_color(player_bg_color) is False:
+        player_bg_color = 'white'
         new_window.destroy()
 
 
@@ -300,7 +324,10 @@ def bg_color():
 
     new_window = Toplevel(root)
     new_window.geometry('200x200')
-    new_window['bg'] = player_bg_color
+    if check_color(player_bg_color) is True:
+        new_window['bg'] = player_bg_color
+    else:
+        new_window['bg'] = 'white'
 
     my_label = Label(new_window, text="Write the name of the color \n"
                                       "or RGB color with the # \n"
@@ -344,7 +371,10 @@ def lt_color():
 
     new_window = Toplevel(root)
     new_window.geometry('200x200')
-    new_window['bg'] = player_bg_color
+    if check_color(player_bg_color) is True:
+        new_window['bg'] = player_bg_color
+    else:
+        new_window['bg'] = 'white'
 
     my_label = Label(new_window, text="Write the name of the color \n"
                                       "or RGB color with the # \n"
@@ -387,7 +417,10 @@ def viewer_color():
 
     new_window = Toplevel(root)
     new_window.geometry('200x200')
-    new_window['bg'] = player_bg_color
+    if check_color(player_bg_color) is True:
+        new_window['bg'] = player_bg_color
+    else:
+        new_window['bg'] = 'white'
 
     my_label = Label(new_window, text="Write the name of the color \n"
                                       "or RGB color with the # \n"
@@ -431,7 +464,10 @@ def bar_color():
 
     new_window = Toplevel(root)
     new_window.geometry('200x200')
-    new_window['bg'] = player_bg_color
+    if check_color(player_bg_color) is True:
+        new_window['bg'] = player_bg_color
+    else:
+        new_window['bg'] = 'white'
 
     my_label = Label(new_window, text="Write the name of the color \n"
                                       "or RGB color with the # \n"
@@ -475,7 +511,10 @@ def slc_letter_color():
 
     new_window = Toplevel(root)
     new_window.geometry('200x200')
-    new_window['bg'] = player_bg_color
+    if check_color(player_bg_color) is True:
+        new_window['bg'] = player_bg_color
+    else:
+        new_window['bg'] = 'white'
 
     my_label = Label(new_window, text="Write the name of the color \n"
                                       "or RGB color with the # \n"
@@ -634,10 +673,32 @@ root.mainloop()
 with open('theme.json', 'w', encoding='utf-8', errors='ignore') as theme_file:
     theme = {}
 
-    theme['player_bg_color'] = player_bg_color
-    theme['playlist_viewer_color'] = playlist_viewer_color
-    theme['playlist_bar_color'] = playlist_bar_color
-    theme['letter_color'] = letter_color
-    theme['select_letter_color'] = select_letter_color
+    #   Giant block of code to verify if the color tha will be save exist
+    #   SORRY, I TRY USE AN "FOR" BUT DOESN'T WORK
+
+    if check_color(player_bg_color) is True:
+        theme['player_bg_color'] = player_bg_color
+    else:
+        theme['player_bg_color'] = 'white'
+
+    if check_color(playlist_viewer_color) is True:
+        theme['playlist_viewer_color'] = playlist_viewer_color
+    else:
+        theme['playlist_viewer_color'] = 'black'
+
+    if check_color(playlist_bar_color) is True:
+        theme['playlist_bar_color'] = playlist_bar_color
+    else:
+        theme['playlist_bar_color'] = 'white'
+
+    if check_color(letter_color) is True:
+        theme['letter_color'] = letter_color
+    else:
+        theme['letter_color'] = '#fcb505'
+
+    if check_color(select_letter_color) is True:
+        theme['select_letter_color'] = select_letter_color
+    else:
+        theme['select_letter_color'] = 'black'
 
     json.dump(theme, theme_file)
