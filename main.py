@@ -1,7 +1,7 @@
 #   LUAN ROCKENBACH DA SILVA
 #   26/09/2021
 #   Importação das bibliotecas necessárias
-
+import ttkthemes
 import vlc
 from tkinter import *
 from tkinter import filedialog
@@ -11,7 +11,7 @@ import os
 import time
 from mutagen.mp3 import MP3
 from colour import Color
-import simplejson
+from tkinter import ttk
 
 
 #   Initial Variables
@@ -23,6 +23,7 @@ new_window = None
 letter_input_tk = None
 is_paused = None
 imported_songs = []
+song_total_length = None
 
 #   Reading in the json file the last colors player set configurations
 try:
@@ -65,11 +66,13 @@ def add_song():
     #   Removing file path and .mp3 from music name to show in listbox
     song = song_dir.replace(f'C:/Users/{user_name}/Music/', '')
     song = song.replace('.mp3', '')
-    song_box.insert(END, song)
-    imported_songs.append(song + '\n')
+
+    if song + '\n' not in imported_songs:
+        imported_songs.append(song + '\n')
+        song_box.insert(END, song)
 
     #   Turning song box strings into bold
-    bolded = font.Font(weight='bold', size='10')  # will use the default font
+    bolded = font.Font(weight='bold', size='9')  # will use the default font
     song_box.config(font=bolded)
 
 
@@ -81,8 +84,14 @@ def add_many_songs():
     for song in songs_dir:
         song = song.replace(f'C:/Users/{user_name}/Music/', '')
         song = song.replace('.mp3', '')
-        song_box.insert(END, song)
-        imported_songs.append(song + '\n')
+
+        if song +'\n' not in imported_songs:
+            imported_songs.append(song + '\n')
+            song_box.insert(END, song)
+
+        #   Turning song box strings into bold
+        bolded = font.Font(weight='bold', size='9')  # will use the default font
+        song_box.config(font=bolded)
 
 
 #   Remove Song Menu
@@ -118,31 +127,54 @@ def remove_all_songs():
 
 #   Get the current time of the playing song
 def current_song_length():
+    global song_total_length
+
+    song_box.activate(ACTIVE)
+    song_box.select_set(ACTIVE, last=None)
 
     #   Get the current song time (on ms) and convert to sec
     current = player.get_time() / 1000
 
     # Get the time converted to sec and put it on time format
     current_song_intime_format = time.strftime('%M:%S', time.gmtime(current))
-    #   Shows the current time on time format
-    current_time.config(text=current_song_intime_format, bg=player_bg_color, fg=song_label_color)
 
-    current_time.after(1000, current_song_length)
+    #   Set the font size
+    font_size = font.Font(size='8')
+
+    #   Shows the current time on time format
+    current_time.config(text=current_song_intime_format, bg=player_bg_color, fg=song_label_color, font=font_size)
 
     #   Get the total length of the current song
-
     total_song_current = song_box.curselection()
-
     music_name = song_box.get(total_song_current)
-
     current_song = f'C:/Users/{user_name}/Music/{music_name}.mp3'
     current_song_mp3 = MP3(current_song)
-
     song_total_length = current_song_mp3.info.length
 
+    #   Update the song slider position
+    slider.config(to=int(song_total_length), value=int(current))
+
+    #   Converting the total song length to time format
     length_converted_totime = time.strftime('%M:%S', time.gmtime(song_total_length))
 
-    total_song_time.config(text=' - ' + length_converted_totime, bg=player_bg_color, fg=song_label_color)
+    #   Shows the total time
+    total_song_time.config(text=length_converted_totime, bg=player_bg_color, fg=song_label_color, font=font_size)
+
+    if current_song_intime_format >= length_converted_totime:
+        next_song()
+
+    volume_label.config(text='', bg=player_bg_color, fg=song_label_color)
+
+    #   Repeat the song current time
+    current_time.after(1000, current_song_length)
+
+
+#   Slider function
+def slider_function(x):
+    global player
+    new_time = int(slider.get()) * 1000
+
+    player.set_time(new_time)
 
 
 #   Stop Menu button
@@ -160,6 +192,7 @@ def play():
     global player
     global is_playing
     global is_paused
+    global song_total_length
 
     if song_box.get(ACTIVE) == is_playing:
         pass
@@ -173,6 +206,11 @@ def play():
         player = vlc.MediaPlayer(song)
         player.play()
         is_playing = music_name
+
+        current_song_length()
+
+        slider_position = song_total_length
+        slider.config(to=slider_position, value=0)
 
         bolded = font.Font(weight='bold', size='10', underline=1)
         music_label.config(text=music_name, bg=player_bg_color, fg=song_label_color, font=bolded)
@@ -204,6 +242,9 @@ def next_song():
     player = vlc.MediaPlayer(song)
     player.play()
     is_playing = music_name
+
+    slider_position = song_total_length
+    slider.config(to=int(slider_position), value=0)
 
     bolded = font.Font(weight='bold', size='10', underline=1)
     music_label.config(text=music_name, bg=player_bg_color, fg=song_label_color, font=bolded)
@@ -238,6 +279,9 @@ def back_song():
     player = vlc.MediaPlayer(song)
     player.play()
     is_playing = music_name
+
+    slider_position = song_total_length
+    slider.config(to=slider_position, value=0)
 
     bolded = font.Font(weight='bold', size='10', underline=1)
     music_label.config(text=music_name, bg=player_bg_color, fg=song_label_color, font=bolded)
@@ -287,6 +331,7 @@ def bg_color_set():
     global input_tk
     global player_bg_color
     global button_bg
+    global song_label_color
 
 
     try:
@@ -294,6 +339,7 @@ def bg_color_set():
         #   Take the input of the color set window
         if check_color(input_tk.get()) is True:
             player_bg_color = input_tk.get()
+            player_bg_color = player_bg_color.replace(' ', '')
         else:
             player_bg_color = 'white'
 
@@ -304,8 +350,9 @@ def bg_color_set():
         controls_frame.config(bg=player_bg_color)
         time_frame.config(bg=player_bg_color)
         volume_frame.config(bg=player_bg_color)
+        volume_label.config(bg=player_bg_color)
 
-        if player_bg_color != 'black':
+        if player_bg_color == 'white':
             back_btn.config(bg=player_bg_color)
             next_btn.config(bg=player_bg_color)
             pause_btn.config(bg=player_bg_color)
@@ -316,21 +363,40 @@ def bg_color_set():
 
             button_bg = player_bg_color
 
+            song_label_color ='black'
+
         elif player_bg_color == 'black':
             music_label.config(bg=player_bg_color, fg='white')
             pause_label.config(bg=player_bg_color, fg='white')
 
             current_time.config(bg=player_bg_color, fg='white')
             total_song_time.config(bg=player_bg_color, fg='white')
+            song_label_color = 'white'
 
         else:
-            button_bg = 'white'
+
+            back_btn.config(bg=player_bg_color)
+            next_btn.config(bg=player_bg_color)
+            pause_btn.config(bg=player_bg_color)
+            play_btn.config(bg=player_bg_color)
+
+            plus_btn.config(bg=player_bg_color)
+            less_btn.config(bg=player_bg_color)
+
+            button_bg = player_bg_color
 
         music_label.config(bg=player_bg_color, fg=song_label_color)
         pause_label.config(bg=player_bg_color, fg=song_label_color)
 
         current_time.config(bg=player_bg_color, fg=song_label_color)
         total_song_time.config(bg=player_bg_color, fg=song_label_color)
+
+        #   Configure the slider background color
+        style.theme_use('alt')
+        style.configure('MyStyle.Horizontal.TScale', background=player_bg_color, troughcolor=song_label_color,
+                        lightcolor='black', darkcolor='black', bordercolor='black')
+        slider.config(style='MyStyle.Horizontal.TScale')
+
 
     except:
         new_window.destroy()
@@ -375,6 +441,7 @@ def letter_color_set():
         #   Take the input od the color set window
         if check_color(input_tk.get()) is True:
             letter_color = input_tk.get()
+            letter_color = letter_color.replace(' ', '')
         else:
             letter_color = '#fcb505'
 
@@ -425,6 +492,7 @@ def viewer_color_set():
         #   Take the input od the color set window
         if check_color(input_tk.get()) is True:
             playlist_viewer_color = input_tk.get()
+            playlist_viewer_color = playlist_viewer_color.replace(' ', '')
         else:
             playlist_viewer_color = 'black'
 
@@ -476,6 +544,7 @@ def bar_color_set():
         #   Take the input od the color set window
         if check_color(input_tk.get()) is True:
             playlist_bar_color = input_tk.get()
+            playlist_bar_color = playlist_bar_color.replace(' ', '')
         else:
             playlist_bar_color = 'white'
 
@@ -527,6 +596,7 @@ def slc_ltt_color_set():
         #   Take the input od the color set window
         if check_color(input_tk.get()) is True:
             select_letter_color = input_tk.get()
+            select_letter_color = select_letter_color.replace(' ', '')
         else:
             select_letter_color = 'black'
 
@@ -578,6 +648,7 @@ def song_label_color_set():
         #   Take the input od the color set window
         if check_color(input_tk.get()) is True:
             song_label_color = input_tk.get()
+            song_label_color = song_label_color.replace(' ', '')
         else:
             song_label = 'black'
 
@@ -588,6 +659,12 @@ def song_label_color_set():
         music_label.config(fg=song_label_color)
         total_song_time.config(fg=song_label_color)
         current_time.config(fg=song_label_color)
+
+        #   Slider colors
+        style.theme_use('alt')
+        style.configure('MyStyle.Horizontal.TScale', background=player_bg_color, troughcolor=song_label_color,
+                        lightcolor='black',darkcolor='black', bordercolor='black')
+        slider.config(style='MyStyle.Horizontal.TScale')
 
     except:
         new_window.destroy()
@@ -635,6 +712,9 @@ def plus_volume():
     new_vol = current_vol + 10
     if new_vol <= 100:
         player.audio_set_volume(new_vol)
+        volume_label.config(text=new_vol, bg=player_bg_color, fg=song_label_color)
+    elif new_vol >= 100:
+        volume_label.config(text=current_vol, bg=player_bg_color, fg=song_label_color)
 
 
 #   Less volume function
@@ -645,6 +725,8 @@ def less_volume():
     new_vol = current_vol - 10
 
     player.audio_set_volume(new_vol)
+
+    volume_label.config(text=new_vol, bg=player_bg_color, fg=song_label_color)
 
 
 #   Buttons background color variable control
@@ -669,24 +751,45 @@ try:
             sg = str(song).replace('\n', '')
             song_box.insert(END, sg)
             imported_songs.append(sg + '\n')
+            #   Turning song box strings into bold
+            bolded = font.Font(weight='bold', size='9')  # will use the default font
+            song_box.config(font=bolded)
 
 except:
     pass
 
 #   Music name label
 music_label = Label(root, text='', bg=player_bg_color)
-music_label.pack()
+music_label.pack(pady=15)
 
 
 #   Song length label
 time_frame = LabelFrame(root, bg=player_bg_color, borderwidth=0)
 time_frame.pack()
 
+#   Create the song length slider
+# Style and appearance  settings
+style = ttk.Style()
+style.theme_use('alt')
+style.configure('MyStyle.Horizontal.TScale', background=player_bg_color, troughcolor=song_label_color,
+                lightcolor='black', darkcolor='black', bordercolor='black')
+
+# Slider
+slider = ttk.Scale(time_frame, from_=0, to=100, orient=HORIZONTAL, value=0, length=275,
+                   style='MyStyle.Horizontal.TScale', command=slider_function)
+
+
 current_time = Label(time_frame, text='', bg=player_bg_color, borderwidth=0)
 total_song_time = Label(time_frame, text='', bg=player_bg_color, borderwidth=0)
 
-current_time.grid(row=0, column=1, pady=10)
-total_song_time.grid(row=0, column=2, pady=10)
+slider.grid(row=0, column=2, pady=5)
+current_time.grid(row=0, column=0)
+total_song_time.grid(row=0, column=4)
+
+
+#   Volume label
+volume_label = Label(root, text='', bg=player_bg_color)
+volume_label.pack()
 
 
 #   Pause label
@@ -730,8 +833,8 @@ plus_btn = Button(volume_frame, image=plus_vol, borderwidth=0, bg=button_bg, com
 less_btn = Button(volume_frame, image=less_vol, borderwidth=0, bg=button_bg, command=less_volume)
 
 #   Player volume buttons position
-less_btn.grid(row=0, column=1, pady=30, padx=8)
-plus_btn.grid(row=0, column=2, pady=30, padx=8)
+less_btn.grid(row=0, column=1, pady=30, padx=10)
+plus_btn.grid(row=0, column=2, pady=30, padx=10)
 
 
 #   Player Menu
@@ -739,20 +842,19 @@ my_menu = Menu(root)
 root.config(menu=my_menu)
 
 
-#   Add song menu
+#   Create Add song(s) to the add song menu
 add_song_menu = Menu(my_menu)
 my_menu.add_cascade(label="Add Song", menu=add_song_menu)
 add_song_menu.add_command(label='Add one song to the playlist', command=add_song)
-
 #   Add many songs menu
 add_song_menu.add_command(label='Add many songs to the playlist', command=add_many_songs)
+add_song_menu.add_command(label='Download new song')
 
 
 #   Remove song menu
 remove_song_menu = Menu(my_menu)
 my_menu.add_cascade(label="Remove Song", menu=remove_song_menu)
 remove_song_menu.add_command(label='Remove one song to the playlist', command=remove_song)
-
 #   Remove many songs menu
 remove_song_menu.add_command(label='Remove all songs of the playlist', command=remove_all_songs)
 
@@ -774,6 +876,7 @@ set_color_menu.add_command(label='song information color', command=song_label_co
 
 root.mainloop()
 
+#   Save songs tha already have been imported
 with open('save_songs.txt', 'w', encoding='utf-8', errors='ignore') as songs:
 
     for sg in imported_songs:
