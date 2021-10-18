@@ -1,7 +1,7 @@
 #   LUAN ROCKENBACH DA SILVA
 #   26/09/2021
 #   Importação das bibliotecas necessárias
-import ttkthemes
+
 import vlc
 from tkinter import *
 from tkinter import filedialog
@@ -12,6 +12,10 @@ import time
 from mutagen.mp3 import MP3
 from colour import Color
 from tkinter import ttk
+import urllib.request
+import re
+import pytube
+import moviepy.editor as mp
 
 
 #   Initial Variables
@@ -24,6 +28,8 @@ letter_input_tk = None
 is_paused = None
 imported_songs = []
 song_total_length = None
+artist_input = ''
+music_name_input = ''
 
 #   Reading in the json file the last colors player set configurations
 try:
@@ -729,6 +735,107 @@ def less_volume():
     volume_label.config(text=new_vol, bg=player_bg_color, fg=song_label_color)
 
 
+#   Search and downloading the music from youtube
+def search_and_down():
+    global artist_input
+    global music_name_input
+    global new_window
+    global player
+
+    #   Download info
+    bolded = font.Font(weight='bold', size='10', underline=1)
+    music_label.config(text='downloading', bg=player_bg_color, fg=song_label_color, font=bolded)
+
+    #   Getting the input write on the entry and replace the spaces for YouTube search style
+    artist = artist_input.get().replace(' ', '+')
+    music_name = music_name_input.get().replace(' ', '+')
+
+    new_window.destroy()
+
+    #   Try stop the music if it's playing
+    try:
+        player.stop()
+    except:
+        pass
+
+    #   Searching on YouTube
+    ytb_search = urllib.request.urlopen(f'https://www.youtube.com/results?search_query={artist}+'
+                                        f'{music_name + "audio+oficial"}')
+    #   Getting the results ids
+    video_ids = re.findall(r'watch\?v=(\S{11})', ytb_search.read().decode())
+    #   Full Url of the music to download
+    music_url = f'https://www.youtube.com/watch?v={video_ids[0]}'
+
+    #   Start the download
+    stream = pytube.YouTube(url=music_url).streams.get_audio_only()
+    stream.download(f'C:/Users/{user_name}/Music/', stream.title)
+
+    #   Conversion
+    clip = mp.AudioFileClip(f'C:\\Users\\{user_name}\\Music\\' + stream.title)
+    clip.write_audiofile(f'C:\\Users\\{user_name}\\Music\\' + stream.title + '.mp3')
+    #   Delete .mp4
+    os.remove(f'C:\\Users\\{user_name}\\Music\\' + stream.title)
+
+    if stream.title + '\n' not in imported_songs:
+        imported_songs.append(stream.title + '\n')
+        song_box.insert(END, stream.title)
+
+        player = vlc.MediaPlayer(f'C:/Users/{user_name}/Music/{stream.title}.mp3')
+        player.play()
+
+        #   Move selection bar
+        song_box.select_clear(0, END)
+        song_box.activate(END)
+        song_box.select_set(END, last=None)
+
+        current_song_length()
+
+        music_label.config(text=stream.title, bg=player_bg_color, fg=song_label_color, font=bolded)
+
+
+#   Download song window function
+def download_window():
+    global artist_input
+    global music_name_input
+    global new_window
+
+    new_window = Toplevel(root)
+    new_window.geometry('300x350')
+    if check_color(player_bg_color) is True:
+        new_window['bg'] = player_bg_color
+    else:
+        new_window['bg'] = 'white'
+
+    #   Input frames
+    label_input_frame = Frame(new_window, bg=player_bg_color)
+    label_input_frame.pack(pady=50)
+    #   Text
+    my_label = Label(label_input_frame, text='Write the nome of the artist, band,\n or singer, and the music name',
+                     bg='gainsboro', fg='black')
+    bolded = font.Font(weight='bold', size='8')  # will use the default font
+    my_label.config(font=bolded)
+    #   Input artist place
+    artist_input = Entry(label_input_frame, width=50, borderwidth=3, bg='gainsboro')
+    artist_input.insert(0, 'Artist, Band or Singer nome')
+
+    # Text 2
+    label2 = Label(label_input_frame, text='Write the music name', bg='gainsboro', fg='black')
+    my_label.config(font=bolded)
+    #   Input music name place
+    music_name_input = Entry(label_input_frame, width=50, borderwidth=3, bg='gainsboro')
+    music_name_input.insert(0, 'Music Name')
+
+    my_label.grid(row=0, column=0, pady=20)
+    artist_input.grid(row=1, column=0)
+    label2.grid(row=2, column=0, pady=20)
+    music_name_input.grid(row=3, column=0)
+
+    button = Button(new_window, text='Confirm', command=search_and_down)
+    button.pack(pady=20)
+
+    new_window.mainloop()
+
+
 #   Buttons background color variable control
 if player_bg_color != 'black':
     button_bg = player_bg_color
@@ -848,7 +955,7 @@ my_menu.add_cascade(label="Add Song", menu=add_song_menu)
 add_song_menu.add_command(label='Add one song to the playlist', command=add_song)
 #   Add many songs menu
 add_song_menu.add_command(label='Add many songs to the playlist', command=add_many_songs)
-add_song_menu.add_command(label='Download new song')
+add_song_menu.add_command(label='Download new song', command=download_window)
 
 
 #   Remove song menu
