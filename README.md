@@ -20,20 +20,12 @@
  - [x] Create the song length (Luan)
  - [x] Add the song lenght slider (Luan)
  - [X] Create the auto next song function (change the song when one ends) (Luan)
- - [ ] Add the download song menu
+ - [x] Add the download song menu (Luan)
  - [x] Create file to save the added songs (Luan)
- - [ ] Create the shuffle button and function
- - [ ] Create instructions
- - [ ] Create function to serch and download the current music album image
- - [ ] Replace the Listbox for the music album image
- - [ ] Create the button and function to visualize the playlist
  - [x] Fix the color set bug (Luan)
+ - [ ] Add white buttons
  
 ...
  
  - [ ] Create the .exe and installer
  - [ ] Provide the player to download
- 
- - [ ] Create an notification asking donation?
- - [ ] Get rich?
-
