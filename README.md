@@ -15,11 +15,11 @@
  - [x] Create the volume functions (Luan)
  - [x] Add the music name label (Luan)
  - [x] Add the "Paused" label (Luan)
- - [ ] Add the volume label
+ - [x] Add the volume label (Luan)
  - [x] Add the current music nome to the player window (Luan)
- - [x] Create the song length
- - [ ] Add the song lenght slider
- - [ ] Create the auto next song function (change the song when one ends)
+ - [x] Create the song length (Luan)
+ - [x] Add the song lenght slider (Luan)
+ - [X] Create the auto next song function (change the song when one ends) (Luan)
  - [ ] Add the download song menu
  - [x] Create file to save the added songs (Luan)
  - [ ] Create the shuffle button and function
